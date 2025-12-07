@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const todoInput = document.getElementById("todo-input");
   const addTaskButton = document.getElementById("add-task-btn");
-  const todo = document.getElementById("todo-list");
+  const todoList = document.getElementById("todo-list");
+  const todoInput = document.getElementById("todo-input");
 
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -14,40 +14,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const newTask = {
       id: Date.now(),
       text: taskText,
-      isCompleted: false,
+      completed: false,
     };
     tasks.push(newTask);
     saveTasks();
     renderTask(newTask);
     todoInput.value = "";
-    console.log(tasks);
+    console.log(newTask);
   });
 
   function renderTask(task) {
     const li = document.createElement("li");
     li.setAttribute("data-id", task.id);
-    if (task.isCompleted) li.classList.add("completed");
+    if (task.completed) li.classList.add("completed");
     li.innerHTML = `
-    <span>${task.text}</span>   
+    <span>${task.text}</span>
     <button>delete</button>`;
-    todoInput.appendChild(li);
 
     li.addEventListener("click", (e) => {
-      if (e.target.tagName == "BUTTON") return;
-      task.isCompleted = !task.isCompleted;
+      if (e.target.tagName === "BUTTON") return;
+      task.completed = !task.completed;
       li.classList.toggle("completed");
       saveTasks();
     });
 
     li.querySelector("button").addEventListener("click", (e) => {
-      e.stopPropagation(); //prevent toggle from firing
-      tasks = tasks.filter((t) => t.id === task.id);
+      e.stopPropagation();
+      tasks = tasks.filter((t) => t.id !== task.id);
       li.remove();
       saveTasks();
     });
-    todo.appendChild(li);
-  }
 
+    todoList.appendChild(li);
+  }
   function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
